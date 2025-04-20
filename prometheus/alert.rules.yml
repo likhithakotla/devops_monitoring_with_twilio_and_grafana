@@ -1,0 +1,74 @@
+groups:
+  - name: system-alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: custom_cpu_usage > 70
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 70% for more than 2 minutes"
+
+      - alert: HighMemoryUsage
+        expr: custom_memory_usage > 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Memory usage detected"
+          description: "Memory usage is above 50% for more than 2 minutes"
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space"
+          description: "Disk usage on root is above 90%"
+
+      - alert: NodeDown
+        expr: up{job="node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node exporter is down"
+          description: "Prometheus has stopped receiving metrics from node-exporter"
+
+      - alert: HighLoadAverage
+        expr: node_load1 > 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 1-minute load average"
+          description: "System load is high for more than 2 minutes"
+
+      - alert: HighNetworkTraffic
+        expr: rate(node_network_receive_bytes_total[1m]) > 100000000
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "High inbound network traffic"
+          description: "High traffic detected on network interface (>100MB/min)"
+
+      # - alert: SwapUsageHigh
+      #   expr: (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / node_memory_SwapTotal_bytes > 0.5
+      #   for: 3m
+      #   labels:
+      #     severity: warning
+      #   annotations:
+      #     summary: "High swap usage"
+      #     description: "More than 50% of swap space is used"
+
+      # - alert: HighFDUsage
+      #   expr: node_filefd_allocated / node_filefd_maximum > 0.9
+      #   for: 2m
+      #   labels:
+      #     severity: warning
+      #   annotations:
+      #     summary: "File descriptor usage is high"
+      #     description: "More than 90% of file descriptors are in use"

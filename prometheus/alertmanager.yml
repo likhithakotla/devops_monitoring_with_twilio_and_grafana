@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: sendgrid-email
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 30m
+
+receivers:
+  - name: sendgrid-email
+    webhook_configs:
+      - url: 'http://host.docker.internal:5001/'
+        send_resolved: true
