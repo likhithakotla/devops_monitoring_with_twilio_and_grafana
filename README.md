@@ -214,7 +214,6 @@ TO_EMAIL=recipient@example.com
 ```bash
 chmod +x run.sh
 ```
-
 - Execute it to start all Docker containers:
 
 ```bash
@@ -228,6 +227,8 @@ This will spin up the following services using Docker:
 - Node Exporter
 - PushGateway
 
+![Container Running and installation of all the dependencies](screenshots/container start.png)
+
 ### 4. Run Python Scripts
 
 - Open **two terminal windows**:
@@ -236,12 +237,14 @@ This will spin up the following services using Docker:
 ```bash
 python3 metrics_simulator.py
 ```
+![Pushed Matrics](screenshots/Pushed Simulator matrics.png)
 
   - **Terminal 2**: Start the SendGrid webhook server
 
 ```bash
 python3 twilio_alert_webhook.py
 ```
+![Alert Message](screenshots/alert message.png)
 
 ### 5. (Optional) Run Webhook in Production Mode
 
@@ -257,6 +260,8 @@ gunicorn -w 4 -b 0.0.0.0:5001 twilio_alert_webhook:app
 - URL: [http://localhost:9090](http://localhost:9090)
 - Navigate to the **Alerts** tab to view active alerts.
 
+![Prometheus alerts](screenshots/Prometheus.png)
+
 ### 7. Access Grafana Dashboards
 
 - URL: [http://localhost:3000](http://localhost:3000)
@@ -271,8 +276,15 @@ gunicorn -w 4 -b 0.0.0.0:5001 twilio_alert_webhook:app
   - Load Average
   - Network Traffic
 
+![Dashboards ](screenshots/all dashboards.png)
+![Dashboards ](screenshots/all dashboards 2.png)
+![Dashboards ](screenshots/all dashboards 3.png)
+![Dashboard ](screenshots/CPU usage dashboard.png)
+
 ### 8. Alerts to Email
 - If threshold is reached alerts are generated to with the email subject and message as shown. 
+
+![Emails ](screenshots/Emails screenshot.png)
 
 ### 9. Stop running containers
 - Run docker-compose down
