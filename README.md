@@ -2,11 +2,11 @@
 
 ## Architecture Summary
 
-This project sets up a complete **Monitoring + Alerting** solution using Docker containers, Prometheus, Grafana, and SendGrid webhook-based alerting.
+This project sets up a complete **Monitoring + Alerting** solution using Prometheus, Grafana, and SendGrid webhook-based alerting.
 
 **Components in Containers:**
 - **Node Exporter**: Provides host metrics 
-- **Pushgateway**: Accepts metrics from short-lived scripts
+- **Pushgateway**: Accepts metrics from short-lived scripts (In our architecture the metrics comes from python simulator code and node exporter)
 - **Prometheus**: Stores and evaluates metrics
 - **Alertmanager**: Sends notifications based on alert rules
 - **Grafana**: Visualizes metrics through dashboards
@@ -15,7 +15,7 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
 - **metrics_simulator.py**: Simulates metrics (CPU, memory, disk, network) (just using for this project to get clear results or else any application code can be used and node exporter can be used for real time CPU, Memory, disk matrices) 
 - **twilio_alert_webhook.py**: Flask server for receiving webhook alerts
 - **sendgrid_config.py**: SendGrid setup for API email delivery
-- **run.sh**: Orchestrates startup of all services and installs all dependencies needed.
+- **run.sh**: Orchestrates startup of all services and installs all dependencies (like prometheus_client, flask, sendgrid and python-dotenv) needed.
 
 **Key Files:**
 | File | Purpose |
@@ -36,7 +36,7 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
 
                  ┌──────────────────────────────┐
                  │    Python Simulator          │
-                 │ (simulator_pushgateway.py)   |
+                 │ (metrics_simulator.py)   |
                  |and/or Node exporter          │
                  └────────────┬─────────────────┘
                               │
@@ -66,7 +66,7 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
                              ▼
                 ┌────────────────────────────┐
                 │   Flask Webhook Server     │
-                │ (sendgrid_alert_webhook.py)│
+                │ (twilio_alert_webhook.py)│
                 └────────────┬───────────────┘
                              ▼
                  Sends Email via SendGrid API
@@ -89,7 +89,7 @@ The following system-level metrics are continuously tracked and are simulated by
 
 | Tool / Script              | Purpose                                                                 |
 |---------------------------|-------------------------------------------------------------------------|
-| `node-exporter`           | Collects real-time system metrics from the host machine  (In this project we are generating some fake metrix from metrics simulator code so node exporter is used only in some cases and it will be discussed below)               |
+| `node-exporter`           | Collects real-time system metrics from the host machine  (In this project we are generating some fake metrics from metrics simulator code so node exporter is used only in some cases and it will be discussed below)               |
 | `metrics_simulator.py`    | Simulates CPU, memory, disk, load, and network metrics for testing      |
 | `pushgateway`             | Stores metrics pushed from short-lived scripts before Prometheus pulls |
 
@@ -154,7 +154,7 @@ For better visualization, each panel is configured with color-coded thresholds i
 
 These visual thresholds make it easy to monitor system health at a glance.
 
-### 🧠 Metric Sources Clarification
+### Metric Sources Clarification
 
 In this monitoring setup, different metrics displayed in Grafana are sourced from either the **custom Python simulator** or **Node Exporter**, and in some cases, **both**:
 
@@ -206,7 +206,7 @@ cd devops_monitoring_with_twilio_and_grafana
 
 - Add the .env file before running:
 
-- Fill in the required environment variables in `.env`, before doing this get the :
+- Fill in the required environment variables in `.env`, before doing this get the api and verify email in sendgrid application. The step up is given in additional info below:
 
 ```env
 SENDGRID_API_KEY=your_actual_sendgrid_api_key
@@ -309,3 +309,39 @@ This setup demonstrates a **production-ready**, **containerized Monitoring & Ale
 It enables real-time **metric collection**, **dashboard monitoring**, and **custom alerting** via email.
 
 The system is fully **Dockerized** and **Kubernetes-ready**, making it suitable for **scalable infrastructure** and **cloud-native deployments**.
+
+_________
+
+## Additional Info: SendGrid Email Setup
+
+To enable email alerting via SendGrid, follow the steps below:
+
+### SendGrid Setup Steps
+
+1. **Create a SendGrid Account**  
+   - Visit [https://sendgrid.com](https://sendgrid.com) and sign up for a free account.
+
+2. **Generate an API Key**  
+   - Go to **Settings > API Keys**  
+   - Click **Create API Key**
+     - Give it a name like `PrometheusAlertsKey`
+     - Choose **Full Access**
+   - Click **Create & Copy** the key.
+
+3. **Configure the API Key, from email and to email in Project**  
+   - Create a `.env` file in your project root (if not already present).
+   - Add the following lines:
+     ```env
+     SENDGRID_API_KEY=your_actual_sendgrid_api_key
+     FROM_EMAIL=your_verified_sender@example.com
+     TO_EMAIL=recipient_email@example.com
+     ```
+
+4. **Verify Sender Identity (Required by SendGrid)**  
+   - Go to **Settings > Sender Authentication** on SendGrid Dashboard.
+   - Add and verify the **From Email Address** (`FROM_EMAIL`) used above.
+   - You will receive a verification email — make sure to confirm it before testing alerts.
+
+Once setup is complete, the webhook server (`twilio_alert_webhook.py`) will use these credentials to send alert emails for active Prometheus alerts.
+
+---
