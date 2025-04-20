@@ -3,25 +3,24 @@
 ## Architecture Summary
 
 This project sets up a complete **Monitoring + Alerting** solution using Docker containers, Prometheus, Grafana, and SendGrid webhook-based alerting.
-**Optional** : Node exporter is only used for real time metrics uncomment if needed. 
 
 **Components in Containers:**
-- **Node Exporter**: Provides host metrics (Uncomment it if you need real host matrics but in this Assessment we are Simulating fake metrics from metrics_simulator code)
+- **Node Exporter**: Provides host metrics 
 - **Pushgateway**: Accepts metrics from short-lived scripts
 - **Prometheus**: Stores and evaluates metrics
 - **Alertmanager**: Sends notifications based on alert rules
 - **Grafana**: Visualizes metrics through dashboards
 
 **Custom Scripts:**
-- **metrics_simulator.py**: Simulates metrics (CPU, memory, disk, network)
+- **metrics_simulator.py**: Simulates metrics (CPU, memory, disk, network) (just using for this project to get clear results or else any application code can be used and node exporter can be used for real time CPU, Memory, disk matrices) 
 - **twilio_alert_webhook.py**: Flask server for receiving webhook alerts
 - **sendgrid_config.py**: SendGrid setup for API email delivery
-- **run.sh**: Orchestrates startup of all services and installs all dependencies.
+- **run.sh**: Orchestrates startup of all services and installs all dependencies needed.
 
 **Key Files:**
 | File | Purpose |
 |------|---------|
-| `docker-compose.yml` | Spins up Prometheus, Grafana, Pushgateway, Node Exporter(optional), Alertmanager |
+| `docker-compose.yml` | Spins up Prometheus, Grafana, Pushgateway, Node Exporter, Alertmanager |
 | `prometheus.yml` | Defines scrape jobs for Prometheus |
 | `alert.rules.yml` | Prometheus alert rules configuration |
 | `system_alert_dashboard.json` | Grafana dashboard for visualizing metrics |
@@ -37,7 +36,8 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
 
                  ┌──────────────────────────────┐
                  │    Python Simulator          │
-                 │ (simulator_pushgateway.py)   │
+                 │ (simulator_pushgateway.py)   |
+                 |and/or Node exporter          │
                  └────────────┬─────────────────┘
                               │
                               ▼
@@ -74,15 +74,12 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
 
 ## Part 1: Monitoring Design
 
-This monitoring setup is built to provide comprehensive observability into the health and performance of a server infrastructure. It is containerized using Docker Compose, and leverages Prometheus, Grafana, and custom Python scripts to simulate and collect metrics.
-
 ### Metrics Monitored
 The following system-level metrics are continuously tracked and are simulated by metrics_simulator python script:
 
 - **CPU Usage (%)** – Measures processing load  
 - **Memory Usage (%)** – Indicates system memory consumption  
 - **Disk Usage (%)** – Observes available vs. used disk space on root mount (`/`)  
-- **Network Traffic (Inbound)** – Monitors bytes received per second  
 - **Load Average (1-minute)** – Tracks system load over the last 1 minute  
 - **Node Status (Up/Down)** – Verifies if node-exporter is active and reachable
 
@@ -92,6 +89,7 @@ The following system-level metrics are continuously tracked and are simulated by
 
 | Tool / Script              | Purpose                                                                 |
 |---------------------------|-------------------------------------------------------------------------|
+| `node-exporter`           | Collects real-time system metrics from the host machine  (In this project we are generating some fake metrix from metrics simulator code so node exporter is used only in some cases and it will be discussed below)               |
 | `metrics_simulator.py`    | Simulates CPU, memory, disk, load, and network metrics for testing      |
 | `pushgateway`             | Stores metrics pushed from short-lived scripts before Prometheus pulls |
 
@@ -155,6 +153,15 @@ For better visualization, each panel is configured with color-coded thresholds i
 | Network Inbound (Bps)    | `< 50MB/s`| `50-100MB/s`| `> 100MB/s` |
 
 These visual thresholds make it easy to monitor system health at a glance.
+
+### 🧠 Metric Sources Clarification
+
+In this monitoring setup, different metrics displayed in Grafana are sourced from either the **custom Python simulator** or **Node Exporter**, and in some cases, **both**:
+
+- **CPU Usage (%), Memory Usage (%), and Disk Space Available (%)** are **simulated** using the `metrics_simulator.py` script.
+- **Node Exporter Status (Up/Down)** is **exclusively scraped from Node Exporter**, which is why it must be running if this metric is enabled.
+- **Network Inbound Traffic (Bytes/sec)** and **1 Minute Load Average** are provided by **both** the **simulator** and **Node Exporter**.
+  - As a result, **you may see two separate lines/graphs** in the Grafana dashboard for these panels — one from each data source.
 
 ---
 
