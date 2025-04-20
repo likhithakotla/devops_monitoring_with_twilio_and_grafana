@@ -273,5 +273,8 @@ gunicorn -w 4 -b 0.0.0.0:5001 twilio_alert_webhook:app
 
 ### 8. Alerts to Email
 - If threshold is reached alerts are generated to with the email subject and message as shown. 
+
+### 9. Stop running containers
+- Run docker-compose down
 ---
 
