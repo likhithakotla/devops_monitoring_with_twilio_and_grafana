@@ -34,7 +34,7 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
 ---
 ## 📈 Architecture Diagram
 
-```text
+
                  ┌──────────────────────────────┐
                  │    Python Simulator          │
                  │ (simulator_pushgateway.py)   │
