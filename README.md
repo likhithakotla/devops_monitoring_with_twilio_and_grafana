@@ -183,7 +183,7 @@ To support scalability:
 - **Self-healing**: Failed containers are restarted automatically.
 - **Scalable**: Easily add new monitoring targets or replicas.
 - **Flexible**: Add more nodes or services without modifying the monitoring setup.
-- **Extensible**: Supports additional tools like Loki, Tempo, or service meshes.
+
 
 This Kubernetes-based architecture ensures that both the application and monitoring stack scale seamlessly with infrastructure growth.
 
@@ -206,7 +206,7 @@ cd devops_monitoring_with_twilio_and_grafana
 
 - Add the .env file before running:
 
-- Fill in the required environment variables in `.env`:
+- Fill in the required environment variables in `.env`, before doing this get the :
 
 ```env
 SENDGRID_API_KEY=your_actual_sendgrid_api_key
