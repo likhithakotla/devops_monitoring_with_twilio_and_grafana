@@ -32,7 +32,7 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
 | `run.sh` | Script to start containers and install dependencies |
 
 ---
-## 📈 Architecture Diagram
+## Architecture Diagram
 
 
                  ┌──────────────────────────────┐
@@ -69,13 +69,14 @@ This project sets up a complete **Monitoring + Alerting** solution using Docker 
                 │ (sendgrid_alert_webhook.py)│
                 └────────────┬───────────────┘
                              ▼
-                 📧 Sends Email via SendGrid API
+                 Sends Email via SendGrid API
 
-## 📈 Part 1: Monitoring Design
+
+## Part 1: Monitoring Design
 
 This monitoring setup is built to provide comprehensive observability into the health and performance of a server infrastructure. It is containerized using Docker Compose, and leverages Prometheus, Grafana, and custom Python scripts to simulate and collect metrics.
 
-### ✅ Metrics Monitored
+### Metrics Monitored
 The following system-level metrics are continuously tracked and are simulated by metrics_simulator python script:
 
 - **CPU Usage (%)** – Measures processing load  
@@ -87,7 +88,7 @@ The following system-level metrics are continuously tracked and are simulated by
 
 ---
 
-### 🛠️ Tools / Scripts Used for Metric Collection
+### Tools / Scripts Used for Metric Collection
 
 | Tool / Script              | Purpose                                                                 |
 |---------------------------|-------------------------------------------------------------------------|
@@ -95,21 +96,21 @@ The following system-level metrics are continuously tracked and are simulated by
 | `pushgateway`             | Stores metrics pushed from short-lived scripts before Prometheus pulls |
 
 
-✅ **Bonus:** All components (Prometheus, Grafana, Node Exporter, PushGateway, Alertmanager) are defined in the `docker-compose.yml` file and can be launched together via `run.sh`.
+**Bonus:** All components (Prometheus, Grafana, Node Exporter, PushGateway, Alertmanager) are defined in the `docker-compose.yml` file and can be launched together via `run.sh`.
 
 ---
 
-### 🗃️ Backend Storage Solution
+### Backend Storage Solution
 
 - **Prometheus** is used as the core time-series database and metrics collector.  
 - It scrapes data from `node-exporter` and `Pushgateway`.  
 - All metrics are stored, visualized in Grafana, and evaluated for alerting rules using `prometheus.yml` and `alert.rules.yml`.
 
-## 🚨 Part 2: Alerting
+## Part 2: Alerting
 
 This section outlines the alerting strategy implemented using **Prometheus Alertmanager**, a **Python webhook server**, and **SendGrid email integration**.
 
-### 🔔 Alerting Strategy
+### Alerting Strategy
 
 - Alerts are triggered based on custom thresholds for each metric.
 - Prometheus continuously evaluates conditions using **PromQL**.
@@ -117,7 +118,7 @@ This section outlines the alerting strategy implemented using **Prometheus Alert
 
 ---
 
-### 📑 Alert Rules Configuration
+### Alert Rules Configuration
 
 Defined in `alert.rules.yml` and mounted into Prometheus:
 
@@ -132,7 +133,7 @@ Defined in `alert.rules.yml` and mounted into Prometheus:
 
 ---
 
-### 📬 Alert Delivery: Email via SendGrid
+### Alert Delivery: Email via SendGrid
 
 - **Webhook URL:** `http://localhost:5001/` (Flask server endpoint)
 - **SendGrid API** is used to send email notifications for active alerts.
@@ -140,7 +141,7 @@ Defined in `alert.rules.yml` and mounted into Prometheus:
 
 ---
 
-### 🎨 Grafana Color Thresholds
+### Grafana Color Thresholds
 
 For better visualization, each panel is configured with color-coded thresholds in the dashboard JSON (`system_alert_dashboard.json`):
 
@@ -157,29 +158,120 @@ These visual thresholds make it easy to monitor system health at a glance.
 
 ---
 
-## 📦 How Does Your Design Scale with Increased Servers or Monitoring Requirements?
+## How Does Your Design Scale with Increased Servers or Monitoring Requirements?
 
-### ✅ Answer:
+### Answer:
 
 To support scalability:
 
-- 🐳 I will **containerize my application** along with all key monitoring components — `Prometheus`, `Grafana`, `PushGateway`, `Node Exporter`, and `AlertManager`.
-- ☸️ I will **deploy the entire stack on Kubernetes**, where:
+- I will **containerize my application** along with all key monitoring components — `Prometheus`, `Grafana`, `PushGateway`, `Node Exporter`, and `AlertManager`.
+- I will **deploy the entire stack on Kubernetes**, where:
   - Each service and the application will run inside individual **Pods**.
   - **Prometheus** will scrape metrics from all pods or nodes in the cluster.
   - Kubernetes’ **Horizontal Pod Autoscaler (HPA)** will scale the application and services automatically based on CPU usage or custom metrics.
   - **Helm Charts** or **Kubernetes Deployments** will allow easy scaling, reproducibility, and management.
 
-### 🔁 Benefits of This Design:
+### Benefits of This Design:
 
-- 💪 **Self-healing**: Failed containers are restarted automatically.
-- 📊 **Scalable**: Easily add new monitoring targets or replicas.
-- ⚙️ **Flexible**: Add more nodes or services without modifying the monitoring setup.
-- 🔌 **Extensible**: Supports additional tools like Loki, Tempo, or service meshes.
+- **Self-healing**: Failed containers are restarted automatically.
+- **Scalable**: Easily add new monitoring targets or replicas.
+- **Flexible**: Add more nodes or services without modifying the monitoring setup.
+- **Extensible**: Supports additional tools like Loki, Tempo, or service meshes.
 
 This Kubernetes-based architecture ensures that both the application and monitoring stack scale seamlessly with infrastructure growth.
 
 ____
 
+---
 
+## Run Instructions
+
+Follow the steps below to set up and run the monitoring system locally:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/likhithakotla/devops_monitoring_with_twilio_and_grafana.git
+cd devops_monitoring_with_twilio_and_grafana
+```
+
+### 2. Add the `.env` File
+
+- Add the .env file before running:
+
+- Fill in the required environment variables in `.env`:
+
+```env
+SENDGRID_API_KEY=your_actual_sendgrid_api_key
+FROM_EMAIL=your_verified_sender@example.com
+TO_EMAIL=recipient@example.com
+```
+
+### 3. Run the `run.sh` Script
+
+- Make the script executable (if not already):
+
+```bash
+chmod +x run.sh
+```
+
+- Execute it to start all Docker containers:
+
+```bash
+./run.sh
+```
+
+This will spin up the following services using Docker:
+- Prometheus
+- Grafana
+- AlertManager
+- Node Exporter
+- PushGateway
+
+### 4. Run Python Scripts
+
+- Open **two terminal windows**:
+  - **Terminal 1**: Start the metric simulator
+
+```bash
+python3 metrics_simulator.py
+```
+
+  - **Terminal 2**: Start the SendGrid webhook server
+
+```bash
+python3 twilio_alert_webhook.py
+```
+
+### 5. (Optional) Run Webhook in Production Mode
+
+If deploying in production, use Gunicorn:
+
+```bash
+pip install gunicorn
+gunicorn -w 4 -b 0.0.0.0:5001 twilio_alert_webhook:app
+```
+
+### 6. Access Prometheus
+
+- URL: [http://localhost:9090](http://localhost:9090)
+- Navigate to the **Alerts** tab to view active alerts.
+
+### 7. Access Grafana Dashboards
+
+- URL: [http://localhost:3000](http://localhost:3000)
+- Login:
+  - Username: `admin`
+  - Password: `admin`
+- View and explore:
+  - CPU Usage
+  - Memory Usage
+  - Disk Space
+  - Node Status
+  - Load Average
+  - Network Traffic
+
+### 8. Alerts to Email
+- If threshold is reached alerts are generated to with the email subject and message as shown. 
+---
 
