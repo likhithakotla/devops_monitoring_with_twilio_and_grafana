@@ -36,7 +36,7 @@ This project sets up a complete **Monitoring + Alerting** solution using Prometh
 
                  ┌──────────────────────────────┐
                  │    Python Simulator          │
-                 │ (metrics_simulator.py)   |
+                 │ (metrics_simulator.py)       |
                  |and/or Node exporter          │
                  └────────────┬─────────────────┘
                               │
@@ -66,7 +66,7 @@ This project sets up a complete **Monitoring + Alerting** solution using Prometh
                              ▼
                 ┌────────────────────────────┐
                 │   Flask Webhook Server     │
-                │ (twilio_alert_webhook.py)│
+                │ (twilio_alert_webhook.py)  │
                 └────────────┬───────────────┘
                              ▼
                  Sends Email via SendGrid API
