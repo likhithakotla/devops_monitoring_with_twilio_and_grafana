@@ -227,7 +227,7 @@ This will spin up the following services using Docker:
 - Node Exporter
 - PushGateway
 
-![Container_Running_and_installation_of_all_the_dependencies](screenshots/container_start.png)
+![Container_Running_and_installation_of_all_the_dependencies](screenshots/containers_start.png)
 
 ### 4. Run Python Scripts
 
@@ -286,7 +286,7 @@ gunicorn -w 4 -b 0.0.0.0:5001 twilio_alert_webhook:app
 
 ![Emails](screenshots/Emails_screenshot.png)
 
-### 9. Stop running containers
+### 9. Stop running containers after execution
 - Run docker-compose down
 ---
 
