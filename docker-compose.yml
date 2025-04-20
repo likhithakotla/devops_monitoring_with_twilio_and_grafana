@@ -9,24 +9,19 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
-    networks:
-      - monitoring-net
 
   node-exporter:
     image: prom/node-exporter
     container_name: node-exporter
     ports:
       - "9100:9100"
-    networks:
-      - monitoring-net
 
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway
     ports:
       - "9091:9091"
-    networks:
-      - monitoring-net
+
 
   alertmanager:
     image: prom/alertmanager
@@ -35,8 +30,7 @@ services:
       - "9093:9093"
     volumes:
       - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    networks:
-      - monitoring-net
+
 
   # grafana:
   #   image: grafana/grafana
@@ -65,5 +59,3 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
-    networks:
-      - monitoring-net
