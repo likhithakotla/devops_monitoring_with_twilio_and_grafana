@@ -244,6 +244,8 @@ This will spin up the following services using Docker:
 ```bash
 python3 metrics_simulator.py
 ```
+If python3 is not working use python
+
 ![Pushed_Matrics](screenshots/Pushed_Simulator_matrics.png)
 
   - **Terminal 2**: Start the SendGrid webhook server
