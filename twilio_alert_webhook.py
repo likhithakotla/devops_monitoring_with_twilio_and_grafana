@@ -15,15 +15,15 @@ def alertmanager_webhook():
         message = alert['annotations'].get('description')
 
         email = Mail(
-            from_email=sendgrid_config.FROM_EMAIL,
-            to_emails=sendgrid_config.TO_EMAIL,
+            from_email=sendgrid_config.FROM_EMAIL, # gets from email from sendgrid_config
+            to_emails=sendgrid_config.TO_EMAIL, #gets to email from sendgrid_config
             subject=subject,
             plain_text_content=message
         )
 
         try:
             response = sg.send(email)
-            print(f"Email sent: {subject}")
+            print(f"Email sent: {subject}") 
         except Exception as e:
             print("Email failed:", e)
 

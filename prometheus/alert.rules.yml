@@ -54,21 +54,3 @@ groups:
         annotations:
           summary: "High inbound network traffic"
           description: "High traffic detected on network interface (>100MB/min)"
-
-      # - alert: SwapUsageHigh
-      #   expr: (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / node_memory_SwapTotal_bytes > 0.5
-      #   for: 3m
-      #   labels:
-      #     severity: warning
-      #   annotations:
-      #     summary: "High swap usage"
-      #     description: "More than 50% of swap space is used"
-
-      # - alert: HighFDUsage
-      #   expr: node_filefd_allocated / node_filefd_maximum > 0.9
-      #   for: 2m
-      #   labels:
-      #     severity: warning
-      #   annotations:
-      #     summary: "File descriptor usage is high"
-      #     description: "More than 90% of file descriptors are in use"
